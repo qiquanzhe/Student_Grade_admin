@@ -24,7 +24,7 @@ public:
     int modUserPwd(QString id,QString newpwd);
 
     //对课程的操作
-    //course searchCourseByCno(QString cno);
+    int searchCourseByCno(QString cno);
     course searchCourseByCnoAndCname(QString cno,QString cname);
     int addNewCourse(course c);
     int modCourseName(QString cno,QString newcname);

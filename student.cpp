@@ -2,10 +2,10 @@
 
 student::student()
 {
-
+    this->sno = "******";
 }
 
-student::student(QString sno, QString sname, QString ssex, int sage, QString sadd, int spol, QDate stime, QString stel)
+student::student(QString sno, QString sname, QString ssex, int sage, QString sadd, int spol, QString stime, QString stel)
 {
     this->sno = sno;
     this->sname = sname;

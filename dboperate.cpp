@@ -67,11 +67,16 @@ int DBoperate::modUserPwd(QString id,QString newpwd)
 }
 
 //对课程的操作
-/*course DBoperate::searchCourseByCno(QString cno)
+int DBoperate::searchCourseByCno(QString cno)
 {
-    course newcourse;
-    return newcourse;
-}*/
+    QString sql = "select * from courses where cno='"+cno+"'";
+    query = new QSqlQuery(sql,db);
+
+    if(query->next())
+        return -1;
+    else
+        return 1;
+}
 
 course DBoperate::searchCourseByCnoAndCname(QString cno,QString cname)
 {
@@ -167,17 +172,54 @@ grade DBoperate:: returnAllGrade(){
     return newgrade;
 }
 
+//student(QString sno,QString sname,QString ssex,int sage,QString sadd,int spol,QString stime,QString stel);
+
 //对学生的操作
 student DBoperate:: searchStudentByNo(QString sno){
-    student newStudent;
-    return newStudent;
+    QString sql = "select * from students where sno='"+sno+"'";
+    query = new QSqlQuery(sql,db);
+    QSqlRecord rec = query->record();
+    if(query->next())
+    {
+        rec = query->record();
+        student resultStudent(rec.value("sno").toString(),
+                              rec.value("sname").toString(),
+                              rec.value("ssex").toString(),
+                              rec.value("sage").toInt(),
+                              rec.value("sadd").toString(),
+                              rec.value("spol").toInt(),
+                              rec.value("stime").toString(),
+                              rec.value("stel").toString());
+        return resultStudent;
+    }
+    else
+    {
+        student resultStudent;
+        return resultStudent;
+    }
+        //return new student;
 }
 student DBoperate::searchStudentByTel(QString stel){
     student newStudent;
     return newStudent;
 }
 student* DBoperate::searchStudentByName(QString sname){return nullptr;}
-int DBoperate:: addNewStudent(student newStudent){return 0;}
+int DBoperate:: addNewStudent(student newStudent){
+    QString sql = QObject::tr("insert into students(sno,sname,sage,sadd,spol,stime,stel,ssex) values('%1','%2',%3,'%4',%5,'%6','%7','%8')")
+            .arg(newStudent.sno)
+            .arg(newStudent.sname)
+            .arg(newStudent.sage)
+            .arg(newStudent.sadd)
+            .arg(newStudent.spol)
+            .arg(newStudent.stime)
+            .arg(newStudent.stel)
+            .arg(newStudent.ssex);
+    qDebug()<<sql;
+    query = new QSqlQuery(db);
+    bool success = query->exec(sql);
+    if(success) return 1;
+    else return -1;
+}
 int DBoperate:: modStudentName(QString sno,QString newName){return 0;}
 int DBoperate:: modStudentPol(QString sno,QString newPol){return 0;}
 int DBoperate:: modStudentTel(QString sno,QString newTel){return 0;}

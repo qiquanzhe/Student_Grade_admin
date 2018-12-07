@@ -1,3 +1,4 @@
+# 2018.12.07 BEFORE
 + ##### student grade,简写sg数据库
 ```
 create database sg;
@@ -260,3 +261,8 @@ alter table grade add constraint fk_courses foreign key(cno) references courses(
 	|:-:|:-:|:-:|
 	| displayStuRefreshBtn| QPushButton | 用于刷新表中数据|
 	| displayStuTable | QTableWidget | 用于展示遍历表|
+
+----
+# 2018.12.08
+	+ 增加了对数据库中已有的课程的判断
+	+ 更新了函数，现在可以实现添加学生了

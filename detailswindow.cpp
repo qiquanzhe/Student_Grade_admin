@@ -152,7 +152,6 @@ void DetailsWindow:: on_addCbtn_clicked(){
     QString cno = ui->addCnoInput->text();
     QString cteacher = ui->addTeaInput->text();
     QString ccredit = ui->addCreInput->text();
-    double credit = 0;
 
     if(cname.length() == 0)
     {
@@ -188,7 +187,13 @@ void DetailsWindow:: on_addCbtn_clicked(){
     else{
         //credit = ccredit.toDouble();
         course newCourse(cno,cname,cteacher,ccredit);
-        qDebug()<<ccredit<<cno<<cname<<cteacher;
+        //qDebug()<<ccredit<<cno<<cname<<cteacher;
+        if(dbo->searchCourseByCno(cno) == -1)
+        {
+            QMessageBox::information(this,"Error","已存在的课程号");
+            on_resetCaddbtn_clicked();
+            return;
+        }
         int num = dbo->addNewCourse(newCourse);
         if(num == 1)
         {
@@ -321,6 +326,7 @@ void DetailsWindow:: on_modCbtn_clicked(){
 void DetailsWindow:: on_resetCmodbtn_clicked(){
     ui->modCnoInput->setText("");
     ui->modNewContentInput->setText("");
+    ui->modStuContentCombo->setCurrentIndex(0);
 }
 
 //查找课程
@@ -427,8 +433,90 @@ void DetailsWindow:: on_displayGradeRefreshBtn_clicked(){}
 
 //管理学生
 //添加学生
-void DetailsWindow:: on_addStuBtn_clicked(){}
-void DetailsWindow:: on_resetAddStuBtn_clicked(){}
+void DetailsWindow:: on_addStuBtn_clicked(){
+    QString sno = ui->addStuSnoInput->text();
+    QString sname = ui->addStuSnameInput->text();
+    QString sage_s = ui->addStuSageInput->text();
+    QString stel_s = ui->addStuStelInput->text();
+    QString saddr = ui->addStuSaddInput->text();
+    QString stime = ui->addStuStimeDate->date().toString("yyyy-MM-dd");
+    int spol = ui->addStuSpolCombo->currentIndex();
+    QString ssex = ui->addStuSexCombo->currentIndex() == 0?"男":"女";
+    if(sno == "")
+    {
+        QMessageBox::information(this,"Error","请输入学号");
+        return;
+    }
+    if(sname == "")
+    {
+        QMessageBox::information(this,"Error","请输入学生姓名");
+        return;
+    }
+    if(sage_s == "")
+    {
+        QMessageBox::information(this,"Error","请输入年龄");
+        return;
+    }
+    if(stel_s == "")
+    {
+        QMessageBox::information(this,"Error","请输入电话");
+        return;
+    }
+    if(saddr == "")
+    {
+        QMessageBox::information(this,"Error","请输入地址");
+        return;
+    }
+
+    QRegExp reg ( "^[0-9]*[1-9][0-9]*$");
+    QRegExpValidator qrv(reg);
+    int pos = 0;
+
+    //qDebug()<<ccredit<<qrv.validate(ccredit,pos);
+    if(qrv.validate(sage_s,pos)!=QValidator::Acceptable)
+    {
+        QMessageBox::information(this,"Error","请输入正确的正整数年龄");
+        return;
+    }
+
+    QRegExp reg2("^1[3|5|8|4|7][0-9]{9}$");
+    QRegExpValidator qrv2(reg2);
+    if(qrv2.validate(stel_s,pos)!= QValidator::Acceptable)
+    {
+        QMessageBox::information(this,"Error","请输入正确的数字电话号码");
+        return;
+    }
+
+    if(dbo->searchStudentByNo(sno).sno != "******")
+    {
+        QMessageBox::information(this,"Error","已存在的学号");
+        on_resetAddStuBtn_clicked();
+        return;
+    }
+
+    int sage = sage_s.toInt();
+    student newStudent(sno,sname,ssex,sage,saddr,spol,stime,stel_s);
+    int num = dbo->addNewStudent(newStudent);
+    if(num == 1)
+    {
+        QMessageBox::information(this,"information","添加成功");
+        on_resetAddStuBtn_clicked();
+        return;
+    }
+    else
+        QMessageBox::information(this,"Error","添加失败");
+
+}
+void DetailsWindow:: on_resetAddStuBtn_clicked(){
+    ui->addStuSnoInput->setText("");
+    ui->addStuSaddInput->setText("");
+    ui->addStuSageInput->setText("");
+    ui->addStuSnameInput->setText("");
+    ui->addStuSpolCombo->setCurrentIndex(0);
+    ui->addStuSexCombo->setCurrentIndex(0);
+    ui->addStuStelInput->setText("");
+    ui->addStuStimeDate->setDate(QDate::fromString("2008-09-01","yyyy-MM-dd"));
+}
 
 //删除学生
 void DetailsWindow:: on_delStuFindBtn_clicked(){}

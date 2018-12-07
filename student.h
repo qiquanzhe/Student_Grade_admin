@@ -8,7 +8,7 @@ class student
 {
 public:
     student();
-    student(QString sno,QString sname,QString ssex,int sage,QString sadd,int spol,QDate stime,QString stel);
+    student(QString sno,QString sname,QString ssex,int sage,QString sadd,int spol,QString stime,QString stel);
 public:
     QString sno;
     QString sname;
@@ -16,7 +16,7 @@ public:
     int sage;
     QString sadd;
     int spol;
-    QDate stime;
+    QString stime;
     QString stel;
 };
 
