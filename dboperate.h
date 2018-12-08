@@ -46,7 +46,7 @@ public:
     student* searchStudentByName(QString sname);
     int addNewStudent(student newStudent);
     int modStudentName(QString sno,QString newName);
-    int modStudentPol(QString sno,QString newPol);
+    int modStudentPol(QString sno,int newPol);
     int modStudentTel(QString sno,QString newTel);
     int delStudent(QString sno);
     student* returnAllStudents();

@@ -33,6 +33,7 @@ DetailsWindow::DetailsWindow(QWidget *parent,QString id) :
     ui->delShowTable->setSelectionMode(QAbstractItemView::SingleSelection);
 
     on_displayCourseRefreshBtn_clicked();
+
 }
 
 DetailsWindow::~DetailsWindow()
@@ -291,7 +292,7 @@ void DetailsWindow:: on_modCbtn_clicked(){
     int num = ui->selectModCombo->currentIndex();
     if(cno == "")
     {
-        QMessageBox::information(this,"Error","请输入要删除的课程号");
+        QMessageBox::information(this,"Error","请输入要修改的课程号");
         return;
     }
     if(content == "")
@@ -335,12 +336,12 @@ void DetailsWindow:: on_findCbtn_clicked(){
     QString cname = ui->findCnameInput->text();
     if(cno == "")
     {
-        QMessageBox::information(this,"Error","请输入要删除的课程号");
+        QMessageBox::information(this,"Error","请输入要查找的课程号");
         return;
     }
     else if(cname == "")
     {
-        QMessageBox::information(this,"Error","请输入要删除的课程名");
+        QMessageBox::information(this,"Error","请输入要查找的课程名");
         return;
     }
 
@@ -519,16 +520,204 @@ void DetailsWindow:: on_resetAddStuBtn_clicked(){
 }
 
 //删除学生
-void DetailsWindow:: on_delStuFindBtn_clicked(){}
-void DetailsWindow:: on_delStuBtn_clicked(){}
-void DetailsWindow:: on_resetDelStuBtn_clicked(){}
+void DetailsWindow:: on_delStuFindBtn_clicked(){
+    QString sno = ui->delStuSnoInput->text();
+    student findStudent = dbo->searchStudentByNo(sno);
+    if(sno == "")
+    {
+        QMessageBox::information(this,"Error","请输入学号");
+        return;
+    }
+    if(findStudent.sno == "******")
+    {
+        QMessageBox::information(this,"Error","没有找到该学号");
+        on_resetDelStuBtn_clicked();
+        return;
+    }
+
+    int row = ui->delStuFindTable->rowCount();
+    if(row == 2)
+    {
+        ui->delStuFindTable->removeRow(1);
+        row--;
+    }
+
+    QString pol;
+    switch (findStudent.spol) {
+    case 0:pol = "群众";break;
+    case 1:pol = "共青团员";break;
+    case 2:pol = "中共党员";break;
+    }
+    ui->delStuFindTable->insertRow(row);
+
+    ui->delStuFindTable->setItem(row,0,new QTableWidgetItem(findStudent.sno));
+    ui->delStuFindTable->item(row,0)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+    ui->delStuFindTable->setItem(row,1,new QTableWidgetItem(findStudent.sname));
+    ui->delStuFindTable->item(row,1)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+    ui->delStuFindTable->setItem(row,2,new QTableWidgetItem(findStudent.ssex));
+    ui->delStuFindTable->item(row,2)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+    ui->delStuFindTable->setItem(row,3,new QTableWidgetItem(QString::number(findStudent.sage)));
+    ui->delStuFindTable->item(row,3)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+    ui->delStuFindTable->setItem(row,4,new QTableWidgetItem(findStudent.sadd));
+    ui->delStuFindTable->item(row,4)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+    ui->delStuFindTable->setItem(row,5,new QTableWidgetItem(pol));
+    ui->delStuFindTable->item(row,5)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+    ui->delStuFindTable->setItem(row,6,new QTableWidgetItem(findStudent.stime));
+    ui->delStuFindTable->item(row,6)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+    ui->delStuFindTable->setItem(row,7,new QTableWidgetItem(findStudent.stel));
+    ui->delStuFindTable->item(row,7)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+    studentToDelete = findStudent;
+    ui->delStuBtn->setEnabled(true);
+}
+void DetailsWindow:: on_delStuBtn_clicked(){
+    int num = dbo->delStudent(studentToDelete.sno);
+    if(num == 1)
+    {
+        QMessageBox::information(this,"information","删除成功");
+        on_resetDelStuBtn_clicked();
+        return;
+    }
+    else
+    {
+        QMessageBox::information(this,"Error","删除失败");
+    }
+}
+void DetailsWindow:: on_resetDelStuBtn_clicked(){
+    ui->delStuSnoInput->setText("");
+    if(ui->delStuFindTable->rowCount() == 2)
+        ui->delStuFindTable->removeRow(1);
+    ui->delStuBtn->setEnabled(false);
+}
 
 //修改学生
-void DetailsWindow:: on_modStuBtn_clicked(){}
-void DetailsWindow:: on_resetModStuBtn_clicked(){}
+void DetailsWindow:: on_modStuBtn_clicked(){
+    QString sno = ui->modStuSnoInput->text();
+    QString mod = ui->modStuContentSelect->currentText();
+    QString content = ui->modStuContentInput->text();
+    if(sno == "")
+    {
+        QMessageBox::information(this,"Error","请输入学号");
+        return;
+    }
+    if(content == ""&&mod !="政治面貌")
+    {
+        QMessageBox::information(this,"Error","请输入修改后的内容");
+        return;
+    }
+
+    student searchStudent = dbo->searchStudentByNo(sno);
+    if(searchStudent.sno == "******")
+    {
+        QMessageBox::information(this,"Error","找不到该学号");
+        on_resetModStuBtn_clicked();
+        return;
+    }
+    int num = 0;
+    switch (ui->modStuContentSelect->currentIndex()) {
+    case 0:
+        num = dbo->modStudentName(sno,content);
+        break;
+    case 1:
+        num = dbo->modStudentPol(sno,ui->modStuContentCombo->currentIndex());
+        break;
+    case 2:
+        QRegExp reg2("^1[3|5|8|4|7][0-9]{9}$");
+        QRegExpValidator qrv2(reg2);
+        int pos = 0;
+        if(qrv2.validate(content,pos)!= QValidator::Acceptable)
+        {
+            QMessageBox::information(this,"Error","请输入正确的数字电话号码");
+            return;
+        }
+        num = dbo->modStudentTel(sno,content);
+        break;
+    }
+    if(num == 1)
+    {
+        QMessageBox::information(this,"information","修改成功");
+        on_resetModStuBtn_clicked();
+    }
+    else
+    {
+        QMessageBox::information(this,"Error","修改失败");
+    }
+}
+void DetailsWindow::on_modStuContentSelect_currentIndexChanged() {
+    if(ui->modStuContentSelect->currentIndex() == 1)
+    {
+        ui->modStuContentInput->setText("");
+        ui->modStuContentInput->setEnabled(false);
+        ui->modStuContentCombo->setEnabled(true);
+    }
+    else{
+
+        ui->modStuContentCombo->setCurrentIndex(0);
+        ui->modStuContentCombo->setEnabled(false);
+        ui->modStuContentInput->setEnabled(true);
+    }
+}
+void DetailsWindow:: on_resetModStuBtn_clicked(){
+    ui->modStuSnoInput->setText("");
+    ui->modStuContentSelect->setCurrentIndex(0);
+    ui->modStuContentInput->setEnabled(true);
+    ui->modStuContentInput->setText("");
+    ui->modStuContentCombo->setCurrentIndex(0);
+    ui->modStuContentCombo->setEnabled(false);
+}
 
 //查询学生
-void DetailsWindow:: on_findStuBtn_clicked(){}
+void DetailsWindow:: on_findStuBtn_clicked(){
+    int select = ui->findStuConditionCombo->currentIndex();
+    QString content = ui->findStuContentInput->text();
+    if(content == "")
+    {
+        QMessageBox::information(this,"Error","请输入查询内容");
+        return;
+    }
+    student *findStudents;
+    int row = ui->findStuTable->rowCount();
+    int size = 0;
+    switch (select) {
+    case 0:
+        findStudents[0] = dbo->searchStudentByNo(content);
+        if(findStudents[0].sno == "******")
+        {
+            QMessageBox::information(this,"Error","没有找到该学号！");
+            return;
+        }
+        break;
+    case 1:
+        findStudents = dbo->searchStudentByName(content);
+        if(findStudents[0].sno == "******")
+        {
+            QMessageBox::information(this,"Error","没有找到该姓名！");
+            return;
+        }
+        break;
+    case 2:
+        findStudents[0] = dbo->searchStudentByTel(content);
+       /* while(row != 1)
+            ui->findStuTable->removeRow(--row);
+        ui->findStuTable->insertRow(1);
+        ui->findStuTable->setItem(1,0,new QTableWidgetItem(findStudents->sno));
+        ui->findStuTable->item(1,0)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(1,1,new QTableWidgetItem(findStudents->sname));
+        ui->findStuTable->item(1,1)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(1,2,new QTableWidgetItem(findStudents->sno));
+        ui->findStuTable->item(1,2)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(1,3,new QTableWidgetItem(findStudents->sno));
+        ui->findStuTable->item(1,3)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(1,4,new QTableWidgetItem(findStudents->sno));
+        ui->findStuTable->item(1,4)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(1,5,new QTableWidgetItem(findStudents->sno));
+        ui->findStuTable->item(1,5)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(1,6,new QTableWidgetItem(findStudents->sno));
+        ui->findStuTable->item(1,6)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(1,7,new QTableWidgetItem(findStudents->sno));
+        ui->findStuTable->item(1,7)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);*/
+
+    }
+}
 void DetailsWindow:: on_resetFindStuBtn_clicked(){}
 
 //遍历学生

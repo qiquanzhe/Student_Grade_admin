@@ -220,9 +220,34 @@ int DBoperate:: addNewStudent(student newStudent){
     if(success) return 1;
     else return -1;
 }
-int DBoperate:: modStudentName(QString sno,QString newName){return 0;}
-int DBoperate:: modStudentPol(QString sno,QString newPol){return 0;}
-int DBoperate:: modStudentTel(QString sno,QString newTel){return 0;}
-int DBoperate:: delStudent(QString sno){return 0;}
+int DBoperate:: modStudentName(QString sno,QString newName){
+    QString sql = "update students set sname='"+newName+"' where sno='"+sno+"'";
+    query = new QSqlQuery(db);
+    bool success = query->exec(sql);
+    if(success) return 1;
+    else return -1;
+}
+int DBoperate:: modStudentPol(QString sno,int newPol){
+    QString sql = "update students set spol="+QString::number(newPol)+" where sno='"+sno+"'";
+    //qDebug()<<sql;
+    query = new QSqlQuery(db);
+    bool success = query->exec(sql);
+    if(success) return 1;
+    else return -1;
+}
+int DBoperate:: modStudentTel(QString sno,QString newTel){
+    QString sql = "update students set stel='"+newTel+"' where sno='"+sno+"'";
+    query = new QSqlQuery(db);
+    bool success = query->exec(sql);
+    if(success) return 1;
+    else return -1;
+}
+int DBoperate:: delStudent(QString sno){
+    QString sql = "delete from students where sno='"+sno+"'";
+    query = new QSqlQuery(db);
+    bool success = query->exec(sql);
+    if(success) return 1;
+    else return -1;
+}
 student* DBoperate::returnAllStudents(){return nullptr;}
 

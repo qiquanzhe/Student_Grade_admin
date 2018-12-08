@@ -26,6 +26,7 @@ private:
     DBoperate *dbo;
     QString currentUser;
     course courseToDelete;
+    student studentToDelete;
 private slots:
     //添加用户的按钮
     void on_addbtn_clicked();
@@ -89,6 +90,7 @@ private slots:
 
     //修改学生
     void on_modStuBtn_clicked();
+    void on_modStuContentSelect_currentIndexChanged();
     void on_resetModStuBtn_clicked();
 
     //查询学生
