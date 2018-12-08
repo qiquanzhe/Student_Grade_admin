@@ -266,4 +266,5 @@ alter table grade add constraint fk_courses foreign key(cno) references courses(
 # 2018.12.08
 + 增加了对数据库中已有的课程的判断
 + 更新了函数，现在可以实现添加学生了
+****
 + 当日第二次更新函数，实现学生的删除和信息修改
