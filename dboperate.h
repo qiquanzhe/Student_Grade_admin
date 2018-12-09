@@ -52,7 +52,8 @@ public:
     student* returnAllStudents();
 
     int courseSize;
-
+    int searchStudentSize;
+    int studentSize;
 };
 
 #endif // DBOPERATE_H

@@ -8,15 +8,11 @@ DBoperate::DBoperate()
     db.setUserName("root");
     db.setPassword("123");
     db.setPort(3306);
-    if(db.open())
-    {
-        qDebug()<<"成功连接数据库";
-    }
-    else{
-        QMessageBox::warning(nullptr,"警告","无法连接数据库");
-    }
+    db.open();
 
     courseSize = 0;
+    searchStudentSize = 0;
+    studentSize = 0;
 }
 
 //登录事件查询
@@ -179,6 +175,7 @@ student DBoperate:: searchStudentByNo(QString sno){
     QString sql = "select * from students where sno='"+sno+"'";
     query = new QSqlQuery(sql,db);
     QSqlRecord rec = query->record();
+    searchStudentSize = query->size();
     if(query->next())
     {
         rec = query->record();
@@ -200,10 +197,51 @@ student DBoperate:: searchStudentByNo(QString sno){
         //return new student;
 }
 student DBoperate::searchStudentByTel(QString stel){
-    student newStudent;
-    return newStudent;
+    QString sql = "select * from students where stel='"+stel+"'";
+    query = new QSqlQuery(sql,db);
+    searchStudentSize = query->size();
+    QSqlRecord rec = query->record();
+    if(query->next())
+    {
+        rec = query->record();
+        student resultStudent(rec.value("sno").toString(),
+                              rec.value("sname").toString(),
+                              rec.value("ssex").toString(),
+                              rec.value("sage").toInt(),
+                              rec.value("sadd").toString(),
+                              rec.value("spol").toInt(),
+                              rec.value("stime").toString(),
+                              rec.value("stel").toString());
+        return resultStudent;
+    }
+    else
+    {
+        student resultStudent;
+        return resultStudent;
+    }
 }
-student* DBoperate::searchStudentByName(QString sname){return nullptr;}
+student* DBoperate::searchStudentByName(QString sname){
+    QString sql = "select * from students where sname='"+sname+"'";
+    query = new QSqlQuery(sql,db);
+    student *resultStudent = new student[query->size()];
+    QSqlRecord rec = query->record();
+    searchStudentSize = query->size();
+    int i = 0;
+    while(query->next())
+    {
+        rec = query->record();
+        resultStudent[i].sno = rec.value("sno").toString();
+        resultStudent[i].sname =rec.value("sname").toString();
+        resultStudent[i].ssex =rec.value("ssex").toString();
+        resultStudent[i].sage =rec.value("sage").toInt();
+        resultStudent[i].sadd =rec.value("sadd").toString();
+        resultStudent[i].spol =rec.value("spol").toInt();
+        resultStudent[i].stime =rec.value("stime").toString();
+        resultStudent[i].stel =rec.value("stel").toString();
+        i++;
+    }
+    return resultStudent;
+}
 int DBoperate:: addNewStudent(student newStudent){
     QString sql = QObject::tr("insert into students(sno,sname,sage,sadd,spol,stime,stel,ssex) values('%1','%2',%3,'%4',%5,'%6','%7','%8')")
             .arg(newStudent.sno)
@@ -249,5 +287,28 @@ int DBoperate:: delStudent(QString sno){
     if(success) return 1;
     else return -1;
 }
-student* DBoperate::returnAllStudents(){return nullptr;}
+student* DBoperate::returnAllStudents(){
+    QString sql = "select * from students";
+    query = new QSqlQuery(sql,db);
+    QSqlRecord rec = query->record();
+    studentSize = query->size();
+    if(studentSize == 0)
+        return nullptr;
+    //course *allCourses = new course[courseSize];
+    student *allStudents = new student[studentSize];
+    int i = 0;
+    while (query->next()) {
+        rec = query->record();
+        allStudents[i].sno = rec.value("sno").toString();
+        allStudents[i].sname =rec.value("sname").toString();
+        allStudents[i].ssex =rec.value("ssex").toString();
+        allStudents[i].sage =rec.value("sage").toInt();
+        allStudents[i].sadd =rec.value("sadd").toString();
+        allStudents[i].spol =rec.value("spol").toInt();
+        allStudents[i].stime =rec.value("stime").toString();
+        allStudents[i].stel =rec.value("stel").toString();
+        i++;
+    }
+    return allStudents;
+}
 

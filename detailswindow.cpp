@@ -32,7 +32,10 @@ DetailsWindow::DetailsWindow(QWidget *parent,QString id) :
     ui->delShowTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->delShowTable->setSelectionMode(QAbstractItemView::SingleSelection);
 
+    ui->addGradeGradeInput->setPlaceholderText("支持最多两位小数");
+
     on_displayCourseRefreshBtn_clicked();
+    on_diplayStuRefreshBtn_clicked();
 
 }
 
@@ -391,12 +394,9 @@ void DetailsWindow:: on_displayCourseRefreshBtn_clicked(){
     if(allCourses == nullptr)
         return;
     else{
-        qDebug()<<"进来了。";
         int row = ui->displayCTable->rowCount();
-        qDebug()<<dbo->courseSize;
         for(int i = 0;i < dbo->courseSize;i++)
         {
-            qDebug()<<row;
             ui->displayCTable->insertRow(row);
             ui->displayCTable->setItem(row,0,new QTableWidgetItem(allCourses[i].cno));
             ui->displayCTable->item(row,0)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
@@ -413,7 +413,41 @@ void DetailsWindow:: on_displayCourseRefreshBtn_clicked(){
 
 //管理成绩的事件
 //添加成绩
-void DetailsWindow:: on_addGradeBtn_clicked(){}
+void DetailsWindow:: on_addGradeBtn_clicked(){
+    QString sno = ui->addGradeSnoInput->text();
+    QString cno = ui->addGradeCnoInput->text();
+    QString grade = ui->addGradeGradeInput->text();
+    if(sno == "")
+    {
+        QMessageBox::information(this,"Error","请输入学号");
+        return;
+    }
+    if(cno.length() == 0)
+    {
+        QMessageBox::information(this,"Error","请输入课程号！");
+        return;
+    }
+    if(grade.length() == 0)
+    {
+        QMessageBox::information(this,"Error","请输入课程成绩！");
+        return;
+    }
+    student findStudent = dbo->searchStudentByNo(sno);
+    if(findStudent.sno == "******")
+    {
+        QMessageBox::information(this,"Error","没有找到该学号");
+        on_resetDelStuBtn_clicked();
+        return;
+    }
+    int findTheCourse = dbo->searchCourseByCno(cno);
+    if(findTheCourse == -1)
+    {
+        QMessageBox::information(this,"Error","没有找到该课程");
+        on_resetCfindbtn_clicked();
+        return;
+    }
+
+}
 void DetailsWindow:: on_resetGradeaddBtn_clicked(){}
 
 //删除成绩
@@ -528,6 +562,7 @@ void DetailsWindow:: on_delStuFindBtn_clicked(){
         QMessageBox::information(this,"Error","请输入学号");
         return;
     }
+
     if(findStudent.sno == "******")
     {
         QMessageBox::information(this,"Error","没有找到该学号");
@@ -674,11 +709,12 @@ void DetailsWindow:: on_findStuBtn_clicked(){
         QMessageBox::information(this,"Error","请输入查询内容");
         return;
     }
-    student *findStudents;
+    student *findStudents = nullptr;
     int row = ui->findStuTable->rowCount();
-    int size = 0;
+    //int size = 0;
     switch (select) {
     case 0:
+        findStudents = new student[1];
         findStudents[0] = dbo->searchStudentByNo(content);
         if(findStudents[0].sno == "******")
         {
@@ -688,37 +724,102 @@ void DetailsWindow:: on_findStuBtn_clicked(){
         break;
     case 1:
         findStudents = dbo->searchStudentByName(content);
-        if(findStudents[0].sno == "******")
+        if(dbo->searchStudentSize == 0)
         {
             QMessageBox::information(this,"Error","没有找到该姓名！");
             return;
         }
         break;
     case 2:
+        findStudents = new student[1];
         findStudents[0] = dbo->searchStudentByTel(content);
-       /* while(row != 1)
-            ui->findStuTable->removeRow(--row);
-        ui->findStuTable->insertRow(1);
-        ui->findStuTable->setItem(1,0,new QTableWidgetItem(findStudents->sno));
-        ui->findStuTable->item(1,0)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
-        ui->findStuTable->setItem(1,1,new QTableWidgetItem(findStudents->sname));
-        ui->findStuTable->item(1,1)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
-        ui->findStuTable->setItem(1,2,new QTableWidgetItem(findStudents->sno));
-        ui->findStuTable->item(1,2)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
-        ui->findStuTable->setItem(1,3,new QTableWidgetItem(findStudents->sno));
-        ui->findStuTable->item(1,3)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
-        ui->findStuTable->setItem(1,4,new QTableWidgetItem(findStudents->sno));
-        ui->findStuTable->item(1,4)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
-        ui->findStuTable->setItem(1,5,new QTableWidgetItem(findStudents->sno));
-        ui->findStuTable->item(1,5)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
-        ui->findStuTable->setItem(1,6,new QTableWidgetItem(findStudents->sno));
-        ui->findStuTable->item(1,6)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
-        ui->findStuTable->setItem(1,7,new QTableWidgetItem(findStudents->sno));
-        ui->findStuTable->item(1,7)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);*/
+        if(dbo->searchStudentSize == 0)
+        {
+            QMessageBox::information(this,"Error","没有找到该电话！");
+            return;
+        }
+        break;
+    }
 
+    int i = 0;
+    while(row > 1)
+    {
+        ui->findStuTable->removeRow(--row);
+    }
+    while (i < dbo->searchStudentSize) {
+        QString pol;
+        switch (findStudents[i].spol) {
+        case 0: pol = "群众";break;
+        case 1:pol = "共青团员";break;
+        case 2:pol = "中共党员";break;
+        }
+        ui->findStuTable->insertRow(row);
+        ui->findStuTable->setItem(row,0,new QTableWidgetItem(findStudents[i].sno));
+        ui->findStuTable->item(row,0)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(row,1,new QTableWidgetItem(findStudents[i].sname));
+        ui->findStuTable->item(row,1)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(row,2,new QTableWidgetItem(findStudents[i].ssex));
+        ui->findStuTable->item(row,2)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(row,3,new QTableWidgetItem(QString::number(findStudents[i].sage)));
+        ui->findStuTable->item(row,3)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(row,4,new QTableWidgetItem(findStudents[i].sadd));
+        ui->findStuTable->item(row,4)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(row,5,new QTableWidgetItem(pol));
+        ui->findStuTable->item(row,5)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(row,6,new QTableWidgetItem(findStudents[i].stime));
+        ui->findStuTable->item(row,6)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findStuTable->setItem(row,7,new QTableWidgetItem(findStudents[i].stel));
+        ui->findStuTable->item(row,7)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        row++;
+        i++;
     }
 }
-void DetailsWindow:: on_resetFindStuBtn_clicked(){}
+void DetailsWindow:: on_resetFindStuBtn_clicked(){
+    ui->findStuContentInput->setText("");
+    ui->findStuConditionCombo->setCurrentIndex(0);
+    int row = ui->findStuTable->rowCount();
+    while(row > 1)
+    {
+        ui->findStuTable->removeRow(--row);
+    }
+}
 
 //遍历学生
-void DetailsWindow:: on_diplayStuRefreshBtn_clicked(){}
+void DetailsWindow:: on_diplayStuRefreshBtn_clicked(){
+    int currentRows = ui->displayStuTable->rowCount();
+    while(currentRows > 1)
+        ui->displayStuTable->removeRow(--currentRows);
+    student *allStudents = dbo->returnAllStudents();
+    if(allStudents == nullptr)
+        return;
+    else{
+        int row = 1;
+        for(int i = 0;i < dbo->studentSize;i++)
+        {
+            QString pol;
+            switch (allStudents[i].spol) {
+            case 0: pol = "群众";break;
+            case 1:pol = "共青团员";break;
+            case 2:pol = "中共党员";break;
+            }
+            ui->displayStuTable->insertRow(row);
+            ui->displayStuTable->setItem(row,0,new QTableWidgetItem(allStudents[i].sno));
+            ui->displayStuTable->item(row,0)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            ui->displayStuTable->setItem(row,1,new QTableWidgetItem(allStudents[i].sname));
+            ui->displayStuTable->item(row,1)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            ui->displayStuTable->setItem(row,2,new QTableWidgetItem(allStudents[i].ssex));
+            ui->displayStuTable->item(row,2)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            ui->displayStuTable->setItem(row,3,new QTableWidgetItem(QString::number(allStudents[i].sage)));
+            ui->displayStuTable->item(row,3)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            ui->displayStuTable->setItem(row,4,new QTableWidgetItem(allStudents[i].sadd));
+            ui->displayStuTable->item(row,4)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            ui->displayStuTable->setItem(row,5,new QTableWidgetItem(pol));
+            ui->displayStuTable->item(row,5)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            ui->displayStuTable->setItem(row,6,new QTableWidgetItem(allStudents[i].stime));
+            ui->displayStuTable->item(row,6)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            ui->displayStuTable->setItem(row,7,new QTableWidgetItem(allStudents[i].stel));
+            ui->displayStuTable->item(row,7)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            row++;
+        }
+    }
+}
