@@ -27,6 +27,7 @@ private:
     QString currentUser;
     course courseToDelete;
     student studentToDelete;
+    grade gradeToDelete;
 private slots:
     //添加用户的按钮
     void on_addbtn_clicked();

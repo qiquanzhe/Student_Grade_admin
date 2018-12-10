@@ -36,7 +36,7 @@ DetailsWindow::DetailsWindow(QWidget *parent,QString id) :
 
     on_displayCourseRefreshBtn_clicked();
     on_diplayStuRefreshBtn_clicked();
-
+    on_displayGradeRefreshBtn_clicked();
 }
 
 DetailsWindow::~DetailsWindow()
@@ -203,6 +203,7 @@ void DetailsWindow:: on_addCbtn_clicked(){
         {
             QMessageBox::information(this,"infomation","添加成功");
             on_resetCaddbtn_clicked();
+            //on_displayCourseRefreshBtn_clicked();
         }
         else
         {
@@ -416,7 +417,7 @@ void DetailsWindow:: on_displayCourseRefreshBtn_clicked(){
 void DetailsWindow:: on_addGradeBtn_clicked(){
     QString sno = ui->addGradeSnoInput->text();
     QString cno = ui->addGradeCnoInput->text();
-    QString grade = ui->addGradeGradeInput->text();
+    QString s_grade = ui->addGradeGradeInput->text();
     if(sno == "")
     {
         QMessageBox::information(this,"Error","请输入学号");
@@ -427,7 +428,7 @@ void DetailsWindow:: on_addGradeBtn_clicked(){
         QMessageBox::information(this,"Error","请输入课程号！");
         return;
     }
-    if(grade.length() == 0)
+    if(s_grade.length() == 0)
     {
         QMessageBox::information(this,"Error","请输入课程成绩！");
         return;
@@ -440,31 +441,211 @@ void DetailsWindow:: on_addGradeBtn_clicked(){
         return;
     }
     int findTheCourse = dbo->searchCourseByCno(cno);
-    if(findTheCourse == -1)
+    if(findTheCourse == 1)
     {
         QMessageBox::information(this,"Error","没有找到该课程");
         on_resetCfindbtn_clicked();
         return;
     }
-
+    bool ok = false;
+    double d_grade = s_grade.toDouble(&ok);
+    if(!ok)
+    {
+        QMessageBox::information(this,"Error","请输入正确的成绩");
+        return;
+    }
+    grade searchGrade = dbo->searchGrade(sno,cno);
+    if(searchGrade.sno!="******")
+    {
+        QMessageBox::information(this,"Error","已存在的成绩");
+        on_resetGradeaddBtn_clicked();
+        return;
+    }
+    grade newGrade(sno,cno,d_grade);
+    int success = dbo->addNewGrade(newGrade);
+    if(success)
+    {
+        QMessageBox::information(this,"information","添加成功");
+        on_resetGradeaddBtn_clicked();
+    }
+    else
+        QMessageBox::information(this,"Error","添加失败");
 }
-void DetailsWindow:: on_resetGradeaddBtn_clicked(){}
+void DetailsWindow:: on_resetGradeaddBtn_clicked(){
+    ui->addGradeCnoInput->setText("");
+    ui->addGradeGradeInput->setText("");
+    ui->addGradeSnoInput->setText("");
+}
 
 //删除成绩
-void DetailsWindow:: on_delGradeFindBtn_clicked(){}
-void DetailsWindow:: on_delGradeBtn_clicked(){}
-void DetailsWindow:: on_resetDelGradeBtn_clicked(){}
+void DetailsWindow:: on_delGradeFindBtn_clicked(){
+    QString sno = ui->delGradeSnoInput->text();
+    QString cno = ui->delGradeCnoInput->text();
+    if(sno == "")
+    {
+        QMessageBox::information(this,"Error","请输入学号");
+        return;
+    }
+    if(cno.length() == 0)
+    {
+        QMessageBox::information(this,"Error","请输入课程号！");
+        return;
+    }
+    grade searchGrade = dbo->searchGrade(sno,cno);
+    if(searchGrade.sno == "******")
+    {
+        QMessageBox::information(this,"Error","查找失败或没有该成绩信息");
+        return;
+    }
+    else
+    {
+        int row = ui->delGradeDisplayTable->rowCount();
+        if(row == 2)
+            ui->delGradeDisplayTable->removeRow(1);
+        ui->delGradeDisplayTable->insertRow(1);
+        ui->delGradeDisplayTable->setItem(1,0,new QTableWidgetItem(searchGrade.sno));
+        ui->delGradeDisplayTable->item(1,0)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->delGradeDisplayTable->setItem(1,1,new QTableWidgetItem(searchGrade.cno));
+        ui->delGradeDisplayTable->item(1,1)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->delGradeDisplayTable->setItem(1,2,new QTableWidgetItem(QString::number(searchGrade.sgrade,10,2)));
+        ui->delGradeDisplayTable->item(1,2)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        gradeToDelete = searchGrade;
+        ui->delGradeBtn->setEnabled(true);
+    }
+
+}
+void DetailsWindow:: on_delGradeBtn_clicked(){
+    int num = dbo->delGrade(gradeToDelete.sno,gradeToDelete.cno);
+    if(num == 1)
+    {
+        QMessageBox::information(this,"information","删除成功");
+        on_resetDelGradeBtn_clicked();
+        return;
+    }
+    else
+    {
+        QMessageBox::information(this,"Error","删除失败");
+        return;
+    }
+}
+void DetailsWindow:: on_resetDelGradeBtn_clicked(){
+    ui->delGradeCnoInput->setText("");
+    ui->delGradeSnoInput->setText("");
+    int row = ui->delGradeDisplayTable->rowCount();
+    if(row == 2)
+        ui->delGradeDisplayTable->removeRow(1);
+    ui->delGradeBtn->setEnabled(false);
+}
 
 //修改成绩
-void DetailsWindow:: on_modGradeBtn_clicked(){}
-void DetailsWindow:: on_resetModGradeBtn_clicked(){}
+void DetailsWindow:: on_modGradeBtn_clicked(){
+    QString sno = ui->modGradeSnoInput->text();
+    QString cno = ui->modGradeCnoInput->text();
+    QString newgrade = ui->modGradeNewGradeInput->text();
+    if(sno == "")
+    {
+        QMessageBox::information(this,"Error","请输入学号");
+        return;
+    }
+    if(cno.length() == 0)
+    {
+        QMessageBox::information(this,"Error","请输入课程号！");
+        return;
+    }
+    grade searchGrade = dbo->searchGrade(sno,cno);
+    if(searchGrade.sno == "******")
+    {
+        QMessageBox::information(this,"Error","查找失败或没有该成绩信息");
+        return;
+    }
+
+    bool ok = false;
+    double d_grade = newgrade.toDouble(&ok);
+    int num = dbo->modGrade(sno,cno,d_grade);
+    if(num == 1)
+    {
+        QMessageBox::information(this,"information","修改成功");
+        on_resetDelGradeBtn_clicked();
+        return;
+    }
+    else
+    {
+        QMessageBox::information(this,"Error","修改失败");
+        return;
+    }
+}
+void DetailsWindow:: on_resetModGradeBtn_clicked(){
+    ui->modGradeCnoInput->setText("");
+    ui->modGradeNewGradeInput->setText("");
+    ui->modGradeSnoInput->setText("");
+}
 
 //查询成绩
-void DetailsWindow:: on_findGradeBtn_clicked(){}
-void DetailsWindow:: on_resetFindGradeBtn_clicked(){}
+void DetailsWindow:: on_findGradeBtn_clicked(){
+    QString sno = ui->findGradeSnoInput->text();
+    QString cno = ui->findGradeCnoInput->text();
+    if(sno == "")
+    {
+        QMessageBox::information(this,"Error","请输入学号");
+        return;
+    }
+    if(cno.length() == 0)
+    {
+        QMessageBox::information(this,"Error","请输入课程号！");
+        return;
+    }
+    grade searchGrade = dbo->searchGrade(sno,cno);
+    if(searchGrade.sno == "******")
+    {
+        QMessageBox::information(this,"Error","查找失败或没有该成绩信息");
+        return;
+    }
+    else
+    {
+        int row = ui->findGradeTable->rowCount();
+        if(row == 2)
+            ui->findGradeTable->removeRow(1);
+        ui->findGradeTable->insertRow(1);
+        ui->findGradeTable->setItem(1,0,new QTableWidgetItem(searchGrade.sno));
+        ui->findGradeTable->item(1,0)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findGradeTable->setItem(1,1,new QTableWidgetItem(searchGrade.cno));
+        ui->findGradeTable->item(1,1)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+        ui->findGradeTable->setItem(1,2,new QTableWidgetItem(QString::number(searchGrade.sgrade,10,2)));
+        ui->findGradeTable->item(1,2)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+    }
+}
+void DetailsWindow:: on_resetFindGradeBtn_clicked(){
+    ui->findGradeCnoInput->setText("");
+    ui->findGradeSnoInput->setText("");
+    int row = ui->findGradeTable->rowCount();
+    if(row == 2)
+        ui->findGradeTable->removeRow(1);
+}
 
 //遍历成绩
-void DetailsWindow:: on_displayGradeRefreshBtn_clicked(){}
+void DetailsWindow:: on_displayGradeRefreshBtn_clicked(){
+    grade *allGrades = dbo->returnAllGrade();
+    if(dbo->gradeSize == 0)
+        return;
+    else
+    {
+        int row = ui->displayGradeTable->rowCount();
+        while(row!=1)
+            ui->displayGradeTable->removeRow(--row);
+        int i = 0;
+        while (i < dbo->gradeSize) {
+            ui->displayGradeTable->insertRow(row);
+            ui->displayGradeTable->setItem(row,0,new QTableWidgetItem(allGrades[i].sno));
+            ui->displayGradeTable->item(row,0)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            ui->displayGradeTable->setItem(row,1,new QTableWidgetItem(allGrades[i].cno));
+            ui->displayGradeTable->item(row,1)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            ui->displayGradeTable->setItem(row,2,new QTableWidgetItem(QString::number(allGrades[i].sgrade)));
+            ui->displayGradeTable->item(row,2)->setTextAlignment(Qt::AlignHCenter|Qt::AlignCenter);
+            row++;
+            i++;
+        }
+    }
+}
 
 //管理学生
 //添加学生

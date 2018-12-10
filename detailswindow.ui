@@ -37,7 +37,7 @@
      <bool>false</bool>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -755,6 +755,9 @@
         <property name="autoScroll">
          <bool>true</bool>
         </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
         <property name="gridStyle">
          <enum>Qt::SolidLine</enum>
         </property>
@@ -1185,6 +1188,9 @@
           <pointsize>9</pointsize>
          </font>
         </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
         <property name="rowCount">
          <number>1</number>
         </property>
@@ -1315,6 +1321,9 @@
           <pointsize>9</pointsize>
          </font>
         </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
         <property name="rowCount">
          <number>1</number>
         </property>
@@ -1400,7 +1409,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_11">
        <attribute name="title">
@@ -1612,7 +1621,7 @@
           <x>20</x>
           <y>10</y>
           <width>331</width>
-          <height>111</height>
+          <height>101</height>
          </rect>
         </property>
         <property name="font">
@@ -1783,9 +1792,9 @@
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>130</y>
+          <y>120</y>
           <width>351</width>
-          <height>61</height>
+          <height>71</height>
          </rect>
         </property>
         <property name="font">
@@ -1793,6 +1802,9 @@
           <family>宋体</family>
           <pointsize>9</pointsize>
          </font>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
         </property>
         <property name="rowCount">
          <number>1</number>
@@ -2215,6 +2227,9 @@
           <pointsize>9</pointsize>
          </font>
         </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
         <property name="rowCount">
          <number>1</number>
         </property>
@@ -2278,6 +2293,9 @@
           <family>宋体</family>
           <pointsize>9</pointsize>
          </font>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
         </property>
         <property name="rowCount">
          <number>1</number>
@@ -2371,7 +2389,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab_16">
        <attribute name="title">
@@ -2863,9 +2881,9 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>150</y>
+          <y>140</y>
           <width>371</width>
-          <height>71</height>
+          <height>81</height>
          </rect>
         </property>
         <property name="font">
@@ -2873,6 +2891,9 @@
           <family>宋体</family>
           <pointsize>9</pointsize>
          </font>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
         </property>
         <property name="rowCount">
          <number>1</number>
@@ -3424,9 +3445,9 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>160</y>
+          <y>150</y>
           <width>371</width>
-          <height>71</height>
+          <height>81</height>
          </rect>
         </property>
         <property name="font">
@@ -3434,6 +3455,9 @@
           <family>宋体</family>
           <pointsize>9</pointsize>
          </font>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
         </property>
         <property name="rowCount">
          <number>1</number>
@@ -3546,6 +3570,9 @@
           <family>宋体</family>
           <pointsize>9</pointsize>
          </font>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
         </property>
         <property name="rowCount">
          <number>1</number>

@@ -34,11 +34,11 @@ public:
     course* returnAllCourses();
 
     //对成绩的操作
-    double searchGrade(QString sno,QString cno);
+    grade searchGrade(QString sno,QString cno);
     int addNewGrade(grade newGrade);
     int modGrade(QString sno,QString cno,double newGrade);
     int delGrade(QString sno,QString cno);
-    grade returnAllGrade();
+    grade* returnAllGrade();
 
     //对学生的操作
     student searchStudentByNo(QString sno);
@@ -54,6 +54,7 @@ public:
     int courseSize;
     int searchStudentSize;
     int studentSize;
+    int gradeSize;
 };
 
 #endif // DBOPERATE_H

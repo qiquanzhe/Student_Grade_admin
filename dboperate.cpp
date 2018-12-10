@@ -13,6 +13,7 @@ DBoperate::DBoperate()
     courseSize = 0;
     searchStudentSize = 0;
     studentSize = 0;
+    gradeSize = 0;
 }
 
 //登录事件查询
@@ -159,16 +160,69 @@ course* DBoperate:: returnAllCourses(){
 }
 
 //对成绩的操作
-double searchGrade(QString sno,QString cno){return 0;}
-int DBoperate:: addNewGrade(grade newGrade){return 0;}
-int DBoperate:: modGrade(QString sno,QString cno,double newGrade){return 0;}
-int DBoperate:: delGrade(QString sno,QString cno){return 0;}
-grade DBoperate:: returnAllGrade(){
-    grade newgrade;
-    return newgrade;
+grade DBoperate:: searchGrade(QString sno,QString cno){
+    QString sql = "select grade from grade where sno='"+sno+"' and cno='"+cno+"'";
+    query = new QSqlQuery(sql,db);
+    QSqlRecord rec = query->record();
+    double sgrade = 0;
+    if(query->next())
+    {
+        bool ok;
+        rec=query->record();
+        sgrade = rec.value("grade").toDouble(&ok);
+        if(!ok)
+        {
+            return grade("******","******",0);
+        }
+        else
+        {
+            grade searchGrade(sno,cno,sgrade);
+            return searchGrade;
+        }
+    }
+    else
+        return grade("******","******",0);
 }
 
-//student(QString sno,QString sname,QString ssex,int sage,QString sadd,int spol,QString stime,QString stel);
+int DBoperate:: addNewGrade(grade newGrade){
+    QString sql = "insert into grade values('"+newGrade.sno+"','"+newGrade.cno+"',"+QString::number(newGrade.sgrade)+")";
+    query = new QSqlQuery(db);
+    bool success = query->exec(sql);
+    if(success) return 1;
+    else return 0;
+}
+int DBoperate:: modGrade(QString sno,QString cno,double newGrade){
+    QString sql = "update grade set grade="+QString::number(newGrade,10,2)+" where sno='"+sno+"' and cno='"+cno+"'";
+    query = new QSqlQuery(db);
+    bool success = query->exec(sql);
+    if(success) return 1;
+    else    return -1;
+}
+int DBoperate:: delGrade(QString sno,QString cno){
+    QString sql = "delete from grade where sno='"+sno+"' and cno='"+cno+"'";
+    query = new QSqlQuery(db);
+    bool success = query->exec(sql);
+    if(success) return 1;
+    else return -1;
+}
+grade* DBoperate:: returnAllGrade(){
+    QString sql = "select * from grade";
+    query = new QSqlQuery(sql,db);
+    gradeSize = query->size();
+    grade *allGrades = new grade[gradeSize];
+    QSqlRecord rec = query->record();
+    int i = 0;
+    while(query->next())
+    {
+        rec = query->record();
+        allGrades[i].sno = rec.value("sno").toString();
+        allGrades[i].cno = rec.value("cno").toString();
+        allGrades[i].sgrade = rec.value("grade").toDouble();
+        i++;
+    }
+    return allGrades;
+}
+
 
 //对学生的操作
 student DBoperate:: searchStudentByNo(QString sno){
