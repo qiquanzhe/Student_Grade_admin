@@ -271,3 +271,6 @@ alter table grade add constraint fk_courses foreign key(cno) references courses(
 ----
 # 2018.12.09
 + 学生管理部分完成
+----
+# 2018.12.10
++ 完成了成绩管理部分，系统全部完成。
