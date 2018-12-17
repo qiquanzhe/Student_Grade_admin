@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <QDateTime>
 #include "dboperate.h"
+//#include "keyreciver.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,6 +25,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    void keyPressEvent(QKeyEvent * event);
     ~MainWindow();
 
 protected:

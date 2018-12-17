@@ -32,7 +32,6 @@ DetailsWindow::DetailsWindow(QWidget *parent,QString id) :
     ui->delShowTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->delShowTable->setSelectionMode(QAbstractItemView::SingleSelection);
 
-    ui->addGradeGradeInput->setPlaceholderText("支持最多两位小数");
 
     on_displayCourseRefreshBtn_clicked();
     on_diplayStuRefreshBtn_clicked();
@@ -96,7 +95,7 @@ void DetailsWindow::on_addbtn_clicked(){
     }
     else
     {
-        QMessageBox::information(this,"goodNews","添加成功");
+        QMessageBox::information(this,"Infromation","添加成功");
         on_canceladdbtn_clicked();
     }
 }
@@ -263,6 +262,7 @@ void DetailsWindow:: on_delCourseFindBtn_clicked(){
     courseToDelete = searchCourse;
 }
 void DetailsWindow:: on_delCbtn_clicked(){
+    //qDebug()<<courseToDelete.cno;
     int num = dbo->delCourse(courseToDelete.cno);
     if(num == -1)
     {
@@ -625,13 +625,13 @@ void DetailsWindow:: on_resetFindGradeBtn_clicked(){
 //遍历成绩
 void DetailsWindow:: on_displayGradeRefreshBtn_clicked(){
     grade *allGrades = dbo->returnAllGrade();
+    int row = ui->displayGradeTable->rowCount();
+    while(row!=1)
+        ui->displayGradeTable->removeRow(--row);
     if(dbo->gradeSize == 0)
         return;
     else
     {
-        int row = ui->displayGradeTable->rowCount();
-        while(row!=1)
-            ui->displayGradeTable->removeRow(--row);
         int i = 0;
         while (i < dbo->gradeSize) {
             ui->displayGradeTable->insertRow(row);

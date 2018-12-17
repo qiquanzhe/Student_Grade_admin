@@ -101,6 +101,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(loginButton,SIGNAL(clicked()),this,SLOT(on_loginButton_clicked()));
 
     dbo = new DBoperate();
+    /*KeyReciver *keyRcv = new KeyReciver();
+    this->installEventFilter(keyRcv);*/
+
 }
 
 MainWindow::~MainWindow()
@@ -195,4 +198,10 @@ void MainWindow::timerUpdate()
     QDateTime time = QDateTime::currentDateTime();
     QString str = time.toString("yyyy/MM/dd hh:mm:ss dddd");
     timeLabel->setText(str);
+}
+
+void MainWindow:: keyPressEvent(QKeyEvent * event){
+    if(event->key() == Qt::Key_Return){
+        on_loginButton_clicked();
+    }
 }

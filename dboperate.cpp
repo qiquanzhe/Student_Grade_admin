@@ -6,7 +6,7 @@ DBoperate::DBoperate()
     db.setHostName("127.0.0.1");
     db.setDatabaseName("sg");
     db.setUserName("root");
-    db.setPassword("123");
+    db.setPassword("123456");
     db.setPort(3306);
     db.open();
 
@@ -123,21 +123,14 @@ int DBoperate:: modCourseCredit(QString cno,QString credit){
     else return 0;
 }
 int DBoperate:: delCourse(QString cno){
-    QString sql = "select * from courses where cno = '"+cno+"';";
-    query = new QSqlQuery(sql,db);
-    QSqlRecord rec = query->record();
-    if(!query->next())
-    {
-        return -1;
-    }
-    else{
-        sql="delete from courses where cno='"+cno+"'";
-        query = new QSqlQuery(db);
-        bool success  = query->exec(sql);
-        if(success) return 1;
-        else return -2;
-    }
-    //return 0;
+    QString sql = "delete from grade where cno='"+cno+"'";
+    query = new QSqlQuery(db);
+    query->exec(sql);
+    sql="delete from courses where cno='"+cno+"'";
+    query = new QSqlQuery(db);
+    bool success  = query->exec(sql);
+    if(success) return 1;
+    else return -2;
 }
 course* DBoperate:: returnAllCourses(){
     QString sql = "select * from courses";
@@ -306,7 +299,7 @@ int DBoperate:: addNewStudent(student newStudent){
             .arg(newStudent.stime)
             .arg(newStudent.stel)
             .arg(newStudent.ssex);
-    qDebug()<<sql;
+    //qDebug()<<sql;
     query = new QSqlQuery(db);
     bool success = query->exec(sql);
     if(success) return 1;
@@ -335,6 +328,7 @@ int DBoperate:: modStudentTel(QString sno,QString newTel){
     else return -1;
 }
 int DBoperate:: delStudent(QString sno){
+    query = new QSqlQuery("delete from grade where sno='"+sno+"'",db);
     QString sql = "delete from students where sno='"+sno+"'";
     query = new QSqlQuery(db);
     bool success = query->exec(sql);
