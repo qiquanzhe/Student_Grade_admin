@@ -29,21 +29,25 @@ private:
     student studentToDelete;
     grade gradeToDelete;
 private slots:
-    //添加用户的按钮
+    //添加用户
     void on_addbtn_clicked();
+    //重置添加
     void on_canceladdbtn_clicked();
 
-    //修改密码的按钮
+    //修改密码
     void on_modbtn_clicked();
+    //重置修改
     void on_cancelmodbtn_clicked();
 
     //管理课程的按钮事件
     //添加课程
     void on_addCbtn_clicked();
+    //重置添加
     void on_resetCaddbtn_clicked();
 
     //删除课程
     void on_delCourseFindBtn_clicked();
+    //重置删除
     void on_delCbtn_clicked();
     void on_resetCdelbtn_clicked();
 

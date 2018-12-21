@@ -12,7 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowFlags(Qt::FramelessWindowHint);
     this->setWindowTitle("学生成绩管理系统");
 
-    //窗口背景图片
+    /*
+     * 设置窗口背景自动填充
+     * 选择文件并缩放到窗口大小做背景
+    */
     setAutoFillBackground(true);
     QPalette pal=this->palette();
     QPixmap *pixmap = new QPixmap(":/image/bg.jpg");
@@ -23,7 +26,10 @@ MainWindow::MainWindow(QWidget *parent) :
     mLocation = this->geometry();
     mDrag = false;
 
-    //添加用户账号标志
+    /*
+     *添加用户账号标志
+     *设置位置和大小
+    */
     idLabel = new QLabel(ui->widget);
     idLabel->setGeometry(rect().x()+75,rect().y()+30,32,32);
     QPixmap *idPix = new QPixmap(":/image/id.png");
@@ -31,12 +37,19 @@ MainWindow::MainWindow(QWidget *parent) :
     idLabel->setScaledContents(true);
     idLabel->setPixmap(*idPix);
 
-    //添加用户账号输入框
+    /*
+     * 添加用户账号输入框
+     * 设置位置和大小
+     * 设置字体
+     */
     idInput = new QLineEdit(ui->widget);
     idInput->setGeometry(rect().x()+115,rect().y()+32,175,30);
     idInput->setFont(QFont("Cosmical disfase",10,QFont::Normal));
 
-    //添加密码标志
+    /*
+     * 添加密码标志
+     * 设置位置和大小
+     */
     pwdLabel = new QLabel(ui->widget);
     pwdLabel->setGeometry(rect().x()+75,rect().y()+80,32,32);
     QPixmap *pwdPix = new QPixmap(":/image/password4.png");
@@ -44,13 +57,22 @@ MainWindow::MainWindow(QWidget *parent) :
     pwdLabel->setScaledContents(true);
     pwdLabel->setPixmap(*pwdPix);
 
-    //添加密码输入框
+    /*
+     * 添加密码输入框
+     * 设置位置和大小
+     * 设置字体
+     * 设置密码样式显示
+     */
     pwdInput = new QLineEdit(ui->widget);
     pwdInput->setGeometry(rect().x()+115,rect().y()+80,175,30);
     pwdInput->setFont(QFont("Cosmical disfase",10,QFont::Normal));
     pwdInput->setEchoMode(QLineEdit::Password);
 
-    //添加登录按钮
+    /*
+     * 添加登录按钮
+     * 设置位置和大小
+     * 设置字体和文字
+     */
     loginButton = new QPushButton(ui->widget);
     loginButton->setText("登\t录");
     loginButton->setFont(QFont("华文新魏",16,QFont::Bold));
@@ -101,9 +123,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(loginButton,SIGNAL(clicked()),this,SLOT(on_loginButton_clicked()));
 
     dbo = new DBoperate();
-    /*KeyReciver *keyRcv = new KeyReciver();
-    this->installEventFilter(keyRcv);*/
-
 }
 
 MainWindow::~MainWindow()

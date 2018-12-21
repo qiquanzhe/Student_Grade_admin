@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:/Qt5.11.2/5.11.2/mingw53_32/include",
+                "D:/Qt5.11.2/5.11.2/mingw53_32/include/QtWidgets",
+                "D:/Qt5.11.2/5.11.2/mingw53_32/include/QtCore",
+                "D:/Qt5.11.2/5.11.2/mingw53_32/include/QtSql"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "intelliSenseMode": "msvc-x64"
+        }
+    ],
+    "version": 4
+}
